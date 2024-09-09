@@ -1,0 +1,34 @@
+name: Deploy Docker image
+
+on:
+  workflow_call:
+    inputs:
+      compose-file-name:
+        type: string
+        required: true
+      project-name:
+        type: string
+        required: true
+    secrets:
+      SSH_HOST:
+        required: true
+      SSH_USERNAME:
+        required: true
+      SSH_PASSWORD:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        script: |
+          docker login
+          cd ./compose-files
+          docker compose -f ${{ inputs.compose-file-name }} -p ${{ inputs.project-name }} up -d --pull always
