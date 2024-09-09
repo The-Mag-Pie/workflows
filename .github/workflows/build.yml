@@ -6,6 +6,10 @@ on:
       image-name:
         type: string
         required: true
+      dockerfile-path:
+        type: string
+        required: false
+        default: "./Dockerfile"
     secrets:
       DOCKER_USERNAME:
         required: true
@@ -33,5 +37,6 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
+        file: ${{ inputs.dockerfile-path }}
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/${{ inputs.image-name }}:latest
